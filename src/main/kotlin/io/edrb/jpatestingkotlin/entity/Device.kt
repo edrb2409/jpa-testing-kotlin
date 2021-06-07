@@ -1,5 +1,6 @@
 package io.edrb.jpatestingkotlin.entity
 
+import java.util.*
 import javax.persistence.*
 
 @Entity
@@ -16,4 +17,6 @@ data class Device(
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "client_id", nullable = false)
     lateinit var client: Client
+
+    override fun hashCode(): Int = this::class.java.hashCode()
 }

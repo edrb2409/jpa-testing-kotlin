@@ -1,5 +1,7 @@
 package io.edrb.jpatestingkotlin.repository
 
+import io.edrb.jpatestingkotlin.entity.Client
+import io.edrb.jpatestingkotlin.entity.Device
 import org.hibernate.proxy.HibernateProxy
 import org.junit.jupiter.api.Test
 import org.slf4j.Logger
@@ -12,7 +14,8 @@ import kotlin.test.assertTrue
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class DeviceRepositoryTest(
-    @Autowired private val deviceRepository: DeviceRepository
+    @Autowired private val deviceRepository: DeviceRepository,
+    @Autowired private val clientRepository: ClientRepository
 ) {
 
     companion object {
@@ -49,5 +52,20 @@ class DeviceRepositoryTest(
         assertTrue {
             device == device.copy()
         }
+    }
+
+    @Test
+    internal fun `check hash code`() {
+        val device = Device(
+            name = "device-name"
+        ).apply { client = clientRepository.getById(1) }
+
+        val hashset = hashSetOf(device)
+
+        logger.info("hashcode before storing -> ${device.hashCode()}")
+        deviceRepository.save(device)
+        logger.info("hashcode after storing -> ${device.hashCode()}")
+
+        assertTrue { device in hashset }
     }
 }
